@@ -131,9 +131,24 @@ _todo: test a few variables other than the key outcome variables (for example, t
 First, I analyze whether matched donations lead to an increased response rate of making a donation. 
 
 _todo: make a barplot with two bars. Each bar is the proportion of people who donated. One bar for treatment and one bar for control._
-::: {#fig-proptreatcontrol}
-![Proportion of Donors by Group](../../proptreatcontrol.png)
-:::
+
+```{python}
+import matplotlib.pyplot as plt
+
+# Calculate the proportion of people who donated in each group
+treatment_proportion = df[df['treatment'] == 1]['gave'].mean()
+control_proportion = df[df['control'] == 1]['gave'].mean()
+
+# Create the barplot
+plt.bar(['Treatment', 'Control'], [treatment_proportion, control_proportion], color=['blue', 'orange'])
+plt.ylabel('Proportion of People Who Donated')
+plt.title('Proportion of Donors by Group')
+# Display the proportions
+print(f"Proportion of people who donated in the Treatment group: {treatment_proportion:.2%}")
+print(f"Proportion of people who donated in the Control group: {control_proportion:.2%}")
+
+plt.show()
+```
 
 
 _todo: run a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made. Also run a bivariate linear regression that demonstrates the same finding. (It may help to confirm your calculations match Table 2a Panel A.) Report your statistical results and interpret them in the context of the experiment (e.g., if you found a difference with a small p-value or that was statistically significant at some threshold, what have you learned about human behavior? Use mostly English words, not numbers or stats, to explain your finding.)_
@@ -422,9 +437,91 @@ plt.show()
 
 ### Law of Large Numbers
 
-_to do:  Make a plot like those on slide 43 from our first class and explain the plot to the reader. To do this, you will simulate 100,00 draws from the control distribution and 10,000 draws from the treatment distribution. You'll then calculate a vector of 10,000 differences, and then you'll plot the cumulative average of that vector of differences. Comment on whether the cumulative average approaches the true difference in means._
+_to do:  Make a plot like those on slide 43 from our first class and explain the plot to the reader. To do this, you will simulate 10,000 draws from the control distribution and 10,000 draws from the treatment distribution. You'll then calculate a vector of 10,000 differences, and then you'll plot the cumulative average of that vector of differences. Comment on whether the cumulative average approaches the true difference in means._
+
+```{python}
+import numpy as np
+
+# Filter the control group
+control_amounts = df[df['control'] == 1]['amount']
+
+# Simulate 100,000 draws from the control distribution
+simulated_draws = np.random.choice(control_amounts, size=100000, replace=True)
+
+# Display summary statistics of the simulated draws
+print(f"Simulated Draws Summary:")
+print(f"Mean: {np.mean(simulated_draws):.4f}")
+print(f"Standard Deviation: {np.std(simulated_draws):.4f}")
+print(f"Min: {np.min(simulated_draws):.4f}")
+print(f"Max: {np.max(simulated_draws):.4f}")
+```
+
+```{python}
+# Filter the treatment group
+treatment_amounts = df[df['treatment'] == 1]['amount']
+
+# Simulate 10,000 draws from the treatment distribution
+simulated_treatment_draws = np.random.choice(treatment_amounts, size=10000, replace=True)
+
+# Display summary statistics of the simulated treatment draws
+print(f"Simulated Treatment Draws Summary:")
+print(f"Mean: {np.mean(simulated_treatment_draws):.4f}")
+print(f"Standard Deviation: {np.std(simulated_treatment_draws):.4f}")
+print(f"Min: {np.min(simulated_treatment_draws):.4f}")
+print(f"Max: {np.max(simulated_treatment_draws):.4f}")
+```
 
 
+```{python}
+# Simulate 100,000 draws from the control distribution
+simulated_control_draws = np.random.choice(control_amounts, size=100000, replace=True)
+
+# Simulate 10,000 draws from the treatment distribution
+simulated_treatment_draws = np.random.choice(treatment_amounts, size=10000, replace=True)
+
+# Calculate a vector of 10,000 differences
+differences = simulated_treatment_draws - simulated_control_draws[:10000]
+
+# Calculate the cumulative average of the differences
+cumulative_avg = np.cumsum(differences) / np.arange(1, len(differences) + 1)
+
+# Plot the cumulative average
+plt.figure(figsize=(10, 6))
+plt.plot(cumulative_avg, label="Cumulative Average of Differences")
+plt.axhline(0, color='red', linestyle='--', label="Zero Line")
+plt.xlabel("Number of Differences")
+plt.ylabel("Cumulative Average")
+plt.title("Cumulative Average of Differences Between Treatment and Control")
+plt.legend()
+plt.grid()
+plt.show()
+
+```
+
+```{python}
+from scipy.stats import norm
+
+# Add a distribution curve to the plot
+# Fit a normal distribution to the differences
+mean_diff = np.mean(differences)
+std_diff = np.std(differences)
+
+# Generate x values for the curve
+x = np.linspace(min(differences), max(differences), 1000)
+y = norm.pdf(x, mean_diff, std_diff)
+
+# Plot the distribution curve
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, label="Normal Distribution Curve", color='purple')
+plt.hist(differences, bins=50, density=True, alpha=0.6, color='gray', edgecolor='black')
+plt.axvline(0, color='red', linestyle='--', label="Zero Line")
+plt.xlabel("Differences")
+plt.ylabel("Density")
+plt.title("Distribution of Differences with Fitted Curve")
+plt.legend()
+plt.grid()
+plt.show()
+```
 ### Central Limit Theorem
 
 _to do: Make 4 histograms like those on slide 44 from our first class at sample sizes 50, 200, 500, and 1000 and explain these plots to the reader. To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. Comment on whether zero is in the "middle" of the distribution or whether it's in the "tail."_
