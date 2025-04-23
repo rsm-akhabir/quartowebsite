@@ -22,9 +22,6 @@ This project seeks to replicate their results.
 
 _todo: Read the data into R/Python and describe the data_
 
-Some observations from the summary statistics:
-- The treatment variable has a mean of 0.666813, indicating about two-thirds of the sample received a treatment letter.
-
 ```{python}
 
 import sys
@@ -49,6 +46,10 @@ print(df.info())
 print("\nSummary statistics:")
 print(df.describe(include='all'))
 ```
+
+
+Some observations from the summary statistics:
+- The treatment variable has a mean of 0.666813, indicating about two-thirds of the sample received a treatment letter.
 
 - The control variable has a mean of 0.333187, indicating one-third of the sample received the standard letter with no match.
 
@@ -130,8 +131,6 @@ _todo: test a few variables other than the key outcome variables (for example, t
 
 First, I analyze whether matched donations lead to an increased response rate of making a donation. 
 
-_todo: make a barplot with two bars. Each bar is the proportion of people who donated. One bar for treatment and one bar for control._
-
 ```{python}
 import matplotlib.pyplot as plt
 
@@ -149,9 +148,6 @@ print(f"Proportion of people who donated in the Control group: {control_proporti
 
 plt.show()
 ```
-
-
-_todo: run a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made. Also run a bivariate linear regression that demonstrates the same finding. (It may help to confirm your calculations match Table 2a Panel A.) Report your statistical results and interpret them in the context of the experiment (e.g., if you found a difference with a small p-value or that was statistically significant at some threshold, what have you learned about human behavior? Use mostly English words, not numbers or stats, to explain your finding.)_
 
 ```{python}
 from scipy.stats import ttest_ind
@@ -194,14 +190,12 @@ Notes:
 [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
 
 P-value for treatment in bivariate regression: 0.0019
-_todo: run a probit regression where the outcome variable is whether any charitable donation was made and the explanatory variable is assignment to treatment or control. Confirm that your results replicate Table 3 column 1 in the paper._
 
 
 ### Differences between Match Rates
 
 Next, I assess the effectiveness of different sizes of matched donations on the response rate.
 
-_todo: Use a series of t-tests to test whether the size of the match ratio has an effect on whether people donate or not. For example, does the 2:1 match rate lead increase the likelihood that someone donates as compared to the 1:1 match rate? Do your results support the "figures suggest" comment the authors make on page 8?_
 
 ```{python}
 
@@ -227,7 +221,6 @@ for i in range(len(match_ratios)):
 
 ```
 
-_todo: Assess the same issue using a regression. Specifically, create the variable `ratio1` then regress `gave` on `ratio1`, `ratio2`, and `ratio3` (or alternatively, regress `gave` on the categorical variable `ratio`). Interpret the coefficients and their statistical precision._
 
 ```{python}
 
@@ -244,8 +237,6 @@ print(regression_results.summary())
 
 ```
 
-
-_todo: Calculate the response rate difference between the 1:1 and 2:1 match ratios and the 2:1 and 3:1 ratios.  Do this directly from the data, and do it by computing the differences in the fitted coefficients of the previous regression. what do you conclude regarding the effectiveness of different sizes of matched donations?_
 
 ```{python}
 
@@ -276,7 +267,6 @@ Increasing donation match ratios from 1:1 to 2:1 slightly boosts response rates,
 
 In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.
 
-_todo: Calculate a t-test or run a bivariate linear regression of the donation amount on the treatment status. What do we learn from doing this analysis?_
 
 ```{python}
 # Perform a bivariate linear regression of donation amount on treatment status
@@ -327,9 +317,6 @@ INTERPRETATIONS:
 - The treatment coefficient should not be interpreted causally because the sample is restricted to donors only.
 
 - Treatment could influence both whether someone donates and how much they give. By only analyzing donors, we’re conditioning on a post-treatment outcome, which can lead to biased estimates (known as collider bias).
-
-
-_todo: Make two plot: one for the treatment group and one for the control. Each plot should be a histogram of the donation amounts only among people who donated. Add a red vertical bar or some other annotation to indicate the sample average for each plot._
 
 ```{python}
 
@@ -436,8 +423,6 @@ plt.show()
 ```
 
 ### Law of Large Numbers
-
-_to do:  Make a plot like those on slide 43 from our first class and explain the plot to the reader. To do this, you will simulate 10,000 draws from the control distribution and 10,000 draws from the treatment distribution. You'll then calculate a vector of 10,000 differences, and then you'll plot the cumulative average of that vector of differences. Comment on whether the cumulative average approaches the true difference in means._
 
 ```{python}
 import numpy as np
