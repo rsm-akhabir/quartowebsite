@@ -10,17 +10,30 @@ callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
 
 Dean Karlan at Yale and John List at the University of Chicago conducted a field experiment to test the effectiveness of different fundraising letters. They sent out 50,000 fundraising letters to potential donors, randomly assigning each letter to one of three treatments: a standard letter, a matching grant letter, or a challenge grant letter. They published the results of this experiment in the _American Economic Review_ in 2007. The article and supporting data are available from the [AEA website](https://www.aeaweb.org/articles?id=10.1257/aer.97.5.1774) and from Innovations for Poverty Action as part of [Harvard's Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/27853&version=4.2).
 
-_to do: expand on the description of the experiment._
-
 This project seeks to replicate their results.
 
+In an effort to rigorously test fundraising strategies, Karlan and List conducted a large-scale natural field experiment involving over 50,000 prior donors to a politically oriented nonprofit organization. The central objective was to investigate whether and how price-like mechanisms—specifically matching grants—affect charitable giving behavior.
+
+# Experimental Setup
+Participants were randomly assigned to one of two broad groups:
+
+A control group that received a standard fundraising letter.
+
+A treatment group that received a similar letter but with an additional matching grant offer.
+
+# Within the treatment group, participants were further randomized along three key dimensions:
+
+Matching Ratio: The letter indicated that a fellow donor would match contributions at one of three levels: $1:$1, $2:$1, or $3:$1.
+
+Maximum Matching Grant Size: The offer stated that the leadership donor would match up to $25,000, $50,000, $100,000, or left unspecified.
+
+Suggested Donation Amounts: The reply card included a donation suggestion equal to the recipient’s previous highest donation, or 1.25x or 1.5x that amount.
+
+By analyzing these outcomes, the researchers sought to determine whether matching or challenge grants were effective in motivating donors and, if so, which specific strategies yielded the best results. The findings have implications for nonprofit organizations seeking to optimize their fundraising efforts.
 
 ## Data
 
 ### Description
-
-
-_todo: Read the data into R/Python and describe the data_
 
 ```{python}
 
@@ -574,12 +587,8 @@ plt.legend()
 plt.grid()
 plt.show()
 ```
-Sample Size: 50
-- The distribution is wide and dispersed, reflecting high variability in small samples.
 
-- The mean difference is about 0.174, which is consistent with a positive treatment effect.
-
-- However, zero still lies within the central bulk of the distribution, though slightly off-center.
+At a sample size of 50, the distribution of average differences is wide and variable. The mean is around 0.174, suggesting a positive treatment effect, but the high variance means zero still lies relatively close to the center. With this small sample, the result is noisy, and we cannot confidently reject the possibility that the true effect is zero.
 
 
 ```{python}
@@ -613,6 +622,7 @@ plt.show()
 
 ```
 
+When the sample size increases to 200, the distribution tightens, and the average difference remains positive at about 0.191. Zero begins to move away from the center but still lies within a range where random variation could plausibly explain the observed differences. 
 
 ```{python}
 # Set the sample size and number of repetitions
@@ -644,6 +654,8 @@ plt.grid()
 plt.show()
 
 ```
+
+At a sample size of 500, the distribution becomes more concentrated, and the mean difference of 0.156 shows less variability. Zero is no longer near the middle and starts to appear in the tails. This suggests a stronger signal from the treatment, with less influence from random noise.
 
 ```{python}
 
@@ -677,5 +689,12 @@ plt.grid()
 plt.show()
 
 ```
+
+By the time the sample size reaches 1000, the distribution is narrow and centered near 0.151. Zero is clearly in the tail, and the likelihood of observing such differences under the null is small. This provides strong evidence of a treatment effect.
+
+
+Importantly, zero moves from the center toward the tails of the distribution and eventually falls outside the typical range of differences we’d expect if there were no treatment effect.
+
+Together, the histograms suggest that the treatment group performs better than the control group, and that this observed difference is unlikely to be due to random variation—especially at larger sample sizes. This supports the conclusion that the treatment has a real, measurable effect.
 
 
