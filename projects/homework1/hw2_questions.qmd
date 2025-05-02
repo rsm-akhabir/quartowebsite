@@ -59,6 +59,24 @@ Blueprinty customers are not selected at random. It may be important to account 
 
 _todo: Compare regions and ages by customer status. What do you observe?_
 
+```{python}
+# Compare regions by customer status
+region_counts_customers = customers['region'].value_counts(normalize=True)
+region_counts_non_customers = non_customers['region'].value_counts(normalize=True)
+
+print("Region distribution for customers:")
+print(region_counts_customers)
+print("\nRegion distribution for non-customers:")
+print(region_counts_non_customers)
+
+# Compare ages by customer status
+mean_age_customers = customers['age'].mean()
+mean_age_non_customers = non_customers['age'].mean()
+
+print(f"\nMean age for customers: {mean_age_customers}")
+print(f"Mean age for non-customers: {mean_age_non_customers}")
+
+```
 
 ### Estimation of Simple Poisson Model
 
