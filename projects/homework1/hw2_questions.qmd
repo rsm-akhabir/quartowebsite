@@ -146,7 +146,52 @@ plt.show()
 
 _todo: If you're feeling mathematical, take the first derivative of your likelihood or log-likelihood, set it equal to zero and solve for lambda. You will find lambda_mle is Ybar, which "feels right" because the mean of a Poisson distribution is lambda._
 
+```{python}
+# Derive the first derivative of the log-likelihood function
+# Log-likelihood: l(lambda) = Y * log(lambda) - lambda - log(Y!)
+# First derivative: dl/dlambda = Y / lambda - 1
+
+# Solve for lambda when dl/dlambda = 0
+# Y / lambda - 1 = 0 => lambda = Y
+
+# For a sample of observations, the MLE for lambda is the sample mean (Ybar)
+def compute_lambda_mle(Y):
+   """
+   Compute the MLE for lambda (mean of Y).
+   """
+   return np.mean(Y)
+
+# Example usage
+Y_sample = [5, 3, 4, 6, 2]  # Example observed data
+lambda_mle = compute_lambda_mle(Y_sample)
+print(f"MLE for lambda (mean of Y): {lambda_mle}")
+```
+
 _todo: Find the MLE by optimizing your likelihood function with optim() in R or sp.optimize() in Python._
+
+```{python}
+from scipy.optimize import minimize
+
+# Define the negative log-likelihood function for optimization
+def negative_log_likelihood(lambda_, Y):
+   """
+   Compute the negative log-likelihood for Poisson.
+   """
+   return -np.sum(Y * np.log(lambda_) - lambda_ - np.log(np.array([np.math.factorial(y) for y in Y])))
+
+# Observed data
+Y_sample = [5, 3, 4, 6, 2]  # Example observed data
+
+# Initial guess for lambda
+initial_guess = np.mean(Y_sample)
+
+# Optimize the negative log-likelihood
+result = minimize(lambda l: negative_log_likelihood(l, Y_sample), x0=initial_guess, bounds=[(0.1, None)])
+
+# Extract the MLE for lambda
+lambda_mle = result.x[0]
+print(f"MLE for lambda: {lambda_mle}")
+```
 
 
 ### Estimation of Poisson Regression Model
