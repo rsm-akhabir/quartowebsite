@@ -5,7 +5,6 @@ date: today
 callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
 ---
 
-
 ## Blueprinty Case Study
 
 ### Introduction
@@ -16,8 +15,6 @@ However, Blueprinty has collected data on 1,500 mature (non-startup) engineering
 
 
 ### Data
-
-_todo: Read in data._
 
 ```{python}
 import pandas as pd
@@ -111,36 +108,35 @@ poisson_loglikelihood <- function(lambda, Y){
 }
 ```
 
-
-_todo: Use your function to plot lambda on the horizontal axis and the likelihood (or log-likelihood) on the vertical axis for a range of lambdas (use the observed number of patents as the input for Y)._
-
 ```{python}
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Define the log-likelihood function for Poisson
 def poisson_loglikelihood(lambda_, Y):
    """
    Compute the Poisson log-likelihood for given lambda and observed Y.
    """
-   log_likelihood = Y * np.log(lambda_) - lambda_ - np.log(np.math.factorial(Y))
+   from scipy.special import factorial
+   log_likelihood = np.sum(Y * np.log(lambda_) - lambda_ - np.log(factorial(Y)))
    return log_likelihood
+```
 
-# Observed number of patents
-Y_observed = 5
 
-# Range of lambda values
+_todo: Use your function to plot lambda on the horizontal axis and the likelihood (or log-likelihood) on the vertical axis for a range of lambdas (use the observed number of patents as the input for Y)._
+
+```{python}
+# Define a range of lambda values
 lambda_values = np.linspace(0.1, 10, 100)
 
-# Compute log-likelihood for each lambda
-log_likelihoods = [poisson_loglikelihood(l, Y_observed) for l in lambda_values]
+# Convert Y_sample to a NumPy array
+Y_sample = np.array([5, 3, 4, 6, 2])  # Example observed data
+
+# Compute the log-likelihood for each lambda
+log_likelihoods = [poisson_loglikelihood(l, Y_sample) for l in lambda_values]
 
 # Plot the log-likelihood
 plt.plot(lambda_values, log_likelihoods, label='Log-Likelihood')
 plt.xlabel('Lambda')
 plt.ylabel('Log-Likelihood')
 plt.title('Log-Likelihood vs Lambda')
-plt.axvline(x=Y_observed, color='red', linestyle='--', label='MLE (Lambda = Y)')
+plt.axvline(x=np.mean(Y_sample), color='red', linestyle='--', label='MLE (Mean of Y)')
 plt.legend()
 plt.show()
 ```
@@ -177,7 +173,8 @@ from scipy.optimize import minimize
 def negative_log_likelihood(lambda_, Y):
    """
    Compute the negative log-likelihood for Poisson.
-   """
+   from scipy.special import factorial
+   return -np.sum(Y * np.log(lambda_) - lambda_ - np.log(factorial(Y)))
    return -np.sum(Y * np.log(lambda_) - lambda_ - np.log(np.array([np.math.factorial(y) for y in Y])))
 
 # Observed data
@@ -205,6 +202,19 @@ _todo: Update your likelihood or log-likelihood function with an additional argu
 poisson_regression_likelihood <- function(beta, Y, X){
    ...
 }
+```
+
+```{python}
+def poisson_regression_loglikelihood(beta, Y, X):
+   """
+   Compute the Poisson regression log-likelihood for given beta, observed Y, and covariate matrix X.
+   """
+   # Compute lambda_i = exp(X_i' * beta)
+   lambda_ = np.exp(np.dot(X, beta))
+   
+   # Compute the log-likelihood
+   log_likelihood = np.sum(Y * np.log(lambda_) - lambda_ - np.log(np.array([np.math.factorial(y) for y in Y])))
+   return log_likelihood
 ```
 
 _todo: Use your function along with R's optim() or Python's sp.optimize() to find the MLE vector and the Hessian of the Poisson model with covariates. Specifically, the first column of X should be all 1's to enable a constant term in the model, and the subsequent columns should be age, age squared, binary variables for all but one of the regions, and the binary customer variable. Use the Hessian to find standard errors of the beta parameter estimates and present a table of coefficients and standard errors._
