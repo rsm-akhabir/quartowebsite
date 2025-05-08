@@ -38,6 +38,7 @@ customers = data[data['iscustomer'] == 1]
 non_customers = data[data['iscustomer'] == 0]
 
 # Plot histograms
+
 plt.hist(customers['patents'], bins=20, alpha=0.5, label='Customers')
 plt.hist(non_customers['patents'], bins=20, alpha=0.5, label='Non-Customers')
 plt.xlabel('Number of Patents')
@@ -171,20 +172,16 @@ from scipy.optimize import minimize
 
 # Define the negative log-likelihood function for optimization
 def negative_log_likelihood(lambda_, Y):
-   """
-   Compute the negative log-likelihood for Poisson.
-   from scipy.special import factorial
-   return -np.sum(Y * np.log(lambda_) - lambda_ - np.log(factorial(Y)))
-   return -np.sum(Y * np.log(lambda_) - lambda_ - np.log(np.array([np.math.factorial(y) for y in Y])))
+   return -poisson_loglikelihood(lambda_, Y)
 
-# Observed data
-Y_sample = [5, 3, 4, 6, 2]  # Example observed data
+# Example observed data
+Y_sample = np.array([5, 3, 4, 6, 2])
 
 # Initial guess for lambda
 initial_guess = np.mean(Y_sample)
 
-# Optimize the negative log-likelihood
-result = minimize(lambda l: negative_log_likelihood(l, Y_sample), x0=initial_guess, bounds=[(0.1, None)])
+# Perform optimization to find the MLE
+result = minimize(negative_log_likelihood, x0=initial_guess, args=(Y_sample,), bounds=[(0.01, None)])
 
 # Extract the MLE for lambda
 lambda_mle = result.x[0]
