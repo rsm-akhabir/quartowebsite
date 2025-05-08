@@ -21,6 +21,7 @@ _todo: Read in data._
 
 ```{python}
 import pandas as pd
+import seaborn as sns
 
 # Load the Blueprinty data
 data = pd.read_csv('/home/jovyan/Desktop/marketingwebsite/blueprinty.csv')
@@ -245,7 +246,59 @@ AirBnB is a popular platform for booking short-term rentals. In March 2017, stud
 
 _todo: Assume the number of reviews is a good proxy for the number of bookings. Perform some exploratory data analysis to get a feel for the data, handle or drop observations with missing values on relevant variables, build one or more models (e.g., a poisson regression model for the number of bookings as proxied by the number of reviews), and interpret model coefficients to describe variation in the number of reviews as a function of the variables provided._
 
+```{python}
+# Load the Blueprinty data
+airbnb = pd.read_csv('/home/jovyan/Desktop/marketingwebsite/airbnb.csv')
+
+# Display the first few rows of the dataset
+airbnb.head()
+```
+
+```{python}
+print(airbnb.shape)
+print(airbnb.info())
+```
 
 
+```{python}
+# Show the number of missing values in each column
+missing_values = airbnb.isnull().sum()
+print("Number of missing values in each column:")
+print(missing_values)
+```
+
+```{python}
+airbnb.dropna(subset=['review_scores_cleanliness', 'review_scores_location', 'review_scores_value'], inplace=True)
+```
 
 
+```{python}
+airbnb.describe(include='object')
+```
+
+```{python}
+airbnb['last_scraped'] = pd.to_datetime(airbnb['last_scraped'])
+airbnb['host_since'] = pd.to_datetime(airbnb['host_since'])
+
+airbnb['days'] = (airbnb['last_scraped'] - airbnb['host_since']).dt.days
+
+```
+
+Correlation Matrix for Numerical Variables
+```{python}
+numeric_cols = ['price', 'bathrooms', 'bedrooms', 'number_of_reviews', 
+                'review_scores_cleanliness', 'review_scores_location', 
+                'review_scores_value', 'days']
+sns.heatmap(airbnb[numeric_cols].corr(), annot=True)
+
+```
+
+Price Distribution
+```{python}
+sns.histplot(airbnb['price'], bins=50)
+```
+
+Price vs. Room Type
+```{python}
+sns.boxplot(x='room_type', y='price', data=airbnb)
+```
