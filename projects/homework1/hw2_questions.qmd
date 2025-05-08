@@ -427,3 +427,42 @@ sns.boxplot(x='room_type', y='price', data=airbnb)
 
 ### Poisson Regression Model Using `statsmodels.GLM()`
 
+```{python}
+# Prepare the design matrix X and response variable Y
+airbnb['room_type_encoded'] = airbnb['room_type'].astype('category').cat.codes
+X_airbnb = airbnb[['bathrooms', 'bedrooms', 'number_of_reviews', 
+                   'review_scores_cleanliness', 'review_scores_location', 
+                   'review_scores_value', 'days', 'room_type_encoded']]
+
+# Drop rows with NaN or infinite values
+X_airbnb = X_airbnb.replace([np.inf, -np.inf], np.nan).dropna()
+Y_airbnb = airbnb.loc[X_airbnb.index, 'price']  # Ensure Y matches filtered X
+
+X_airbnb = sm.add_constant(X_airbnb)  # Add intercept term
+
+# Fit Poisson regression model
+poisson_model = sm.GLM(Y_airbnb, X_airbnb, family=sm.families.Poisson())
+poisson_results = poisson_model.fit()
+
+# Display summary of the model
+poisson_results.summary()
+```
+
+## Interpretation
+Intercept (3.4662): Represents the baseline log-expected value of the outcome when all other variables are set to zero.
+
+Bathrooms (+0.3205): Listings with more bathrooms are associated with higher expected counts of the outcome. Each additional bathroom increases the expected count on the log scale.
+
+Bedrooms (+0.1852): More bedrooms are linked to higher activity—each additional bedroom raises the expected log count.
+
+Number of Reviews (-0.0001): Having more past reviews is slightly negatively associated with the expected count. The effect is small but statistically significant.
+
+Cleanliness Score (+0.0122): Higher cleanliness ratings are associated with modest increases in the expected count of the outcome.
+
+Location Score (+0.1820): Better-rated locations show a strong positive association with the expected outcome.
+
+Value Score (-0.0785): Surprisingly, higher value ratings are linked to lower expected counts. This may suggest that "value" is higher in less competitive or less booked listings.
+
+Days (+0.00003758): Listings that have been active longer tend to show slightly higher expected counts, reflecting accumulated exposure over time.
+
+Room Type (Encoded) (-0.6924): The room type significantly influences outcomes. Encoded types (likely private/shared rooms) are associated with notably lower expected counts compared to the reference category.
