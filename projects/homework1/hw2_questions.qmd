@@ -427,8 +427,3 @@ sns.boxplot(x='room_type', y='price', data=airbnb)
 
 ### Poisson Regression Model Using `statsmodels.GLM()`
 
-We model the number of reviews (as a proxy for bookings) using a Poisson regression with the following predictors:
-- `room_type` (categorical)
-- `instant_bookable` (binary)
-- `price`, `days`, `bathrooms`, `bedrooms`
-- Review scores: `cleanliness`, `location`, `value`
