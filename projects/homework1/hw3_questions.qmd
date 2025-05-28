@@ -61,17 +61,176 @@ where the variables are binary indicators and $\varepsilon$ is Type 1 Extreme Va
 The following code provides the simulation of the conjoint data.
 :::: {.callout-note collapse="true"}
 
+```{python}
+import numpy as np
+import pandas as pd
+
+# Set seed for reproducibility
+np.random.seed(123)
+
+# Define attributes
+brand = ["N", "P", "H"]  # Netflix, Prime, Hulu
+ad = ["Yes", "No"]
+price = np.arange(8, 33, 4)  # $8 to $32 in $4 increments
+
+# Generate all possible profiles
+profiles = pd.DataFrame([
+    {'brand': b, 'ad': a, 'price': p}
+    for b in brand for a in ad for p in price
+])
+m = profiles.shape[0]
+
+# Part-worth utilities (true parameters)
+b_util = {"N": 1.0, "P": 0.5, "H": 0}
+a_util = {"Yes": -0.8, "No": 0.0}
+p_util = lambda p: -0.1 * p
+
+# Configuration
+n_peeps = 100
+n_tasks = 10
+n_alts = 3
+
+# Function to simulate one respondent’s data
+def sim_one(id_):
+    all_tasks = []
+    for t in range(1, n_tasks + 1):
+        sampled = profiles.sample(n=n_alts).copy()
+        sampled["resp"] = id_
+        sampled["task"] = t
+        sampled["v"] = (
+            sampled["brand"].map(b_util) +
+            sampled["ad"].map(a_util) +
+            p_util(sampled["price"])
+        )
+        # Add Gumbel (Type I Extreme Value) noise
+        gumbel_noise = -np.log(-np.log(np.random.uniform(size=n_alts)))
+        sampled["u"] = sampled["v"] + gumbel_noise
+        sampled["choice"] = (sampled["u"] == sampled["u"].max()).astype(int)
+        all_tasks.append(sampled)
+
+    return pd.concat(all_tasks)
+
+# Simulate data for all respondents
+conjoint_data = pd.concat([sim_one(i) for i in range(1, n_peeps + 1)])
+
+# Keep only observable variables
+conjoint_data = conjoint_data[["resp", "task", "brand", "ad", "price", "choice"]]
+
+conjoint_data.head()
+
+```
+
 ## 3. Preparing the Data for Estimation
 
 The "hard part" of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer $i$, covariate $k$, and product $j$) instead of the typical 2 dimensions for cross-sectional regression models (consumer $i$ and covariate $k$). The fact that each task for each respondent has the same number of alternatives (3) helps.  In addition, we need to convert the categorical variables for brand and ads into binary variables.
 
-_todo: reshape and prep the data_
+```{python}
+# Step 1: Encode categorical variables
+conjoint_data['brand_N'] = (conjoint_data['brand'] == 'N').astype(int)
+conjoint_data['brand_P'] = (conjoint_data['brand'] == 'P').astype(int)
+conjoint_data['ad_Yes'] = (conjoint_data['ad'] == 'Yes').astype(int)
+
+# Step 2: Combine encoded categorical variables with numeric variables
+conjoint_data['price_scaled'] = conjoint_data['price']  # Keep price as numeric
+X = conjoint_data[['brand_N', 'brand_P', 'ad_Yes', 'price_scaled']].values
+
+# Step 3: Store structured data for estimation
+y = conjoint_data['choice'].values
+n, k = X.shape  # n = number of rows, k = number of covariates
+
+# Step 4: Check dimensions
+print(f"Number of observations (n): {n}")
+print(f"Number of covariates (k): {k}")
+
+# Step 5: Preview reshaped X as a DataFrame
+X_df = pd.DataFrame(X, columns=['brand_N', 'brand_P', 'ad_Yes', 'price_scaled'])
+print(X_df.head())
+```
 
 ## 4. Estimation via Maximum Likelihood
+```{python}
+from scipy.optimize import minimize
 
-_todo: Code up the log-likelihood function._
+# Define the MNL log-likelihood function
+def mnl_log_likelihood(beta, X, y):
+    """
+    Multinomial Logit Log-Likelihood Function
+    :param beta: Coefficients (array-like)
+    :param X: Covariates (n x k matrix)
+    :param y: Choices (binary vector of length n)
+    :return: Negative log-likelihood (to minimize)
+    """
+    utilities = X @ beta  # Linear combination of covariates and coefficients
+    exp_utilities = np.exp(utilities)  # Exponentiate utilities
+    probabilities = exp_utilities / exp_utilities.sum(axis=0)  # Normalize probabilities
+    log_probabilities = np.log(probabilities)
+    log_likelihood = np.sum(y * log_probabilities)  # Log-likelihood
+    return -log_likelihood  # Negative log-likelihood for minimization
 
-_todo: Use `optim()` in R or `scipy.optimize()` in Python to find the MLEs for the 4 parameters ($\beta_\text{netflix}$, $\beta_\text{prime}$, $\beta_\text{ads}$, $\beta_\text{price}$), as well as their standard errors (from the Hessian). For each parameter construct a 95% confidence interval._
+# Initial guesses for beta coefficients
+initial_beta = np.zeros(X.shape[1])
+
+# Set up and run the optimizer
+result = minimize(
+    fun=mnl_log_likelihood,
+    x0=initial_beta,
+    args=(X, y),
+    method='BFGS'
+)
+
+# Extract results
+estimated_beta = result.x
+log_likelihood_at_optimum = -result.fun
+
+# Label the estimated coefficients
+parameters = ['beta_netflix', 'beta_prime', 'beta_ads', 'beta_price']
+results = pd.DataFrame({
+    'Parameter': parameters,
+    'Estimate': estimated_beta
+})
+
+# Print results
+print(results)
+print(f"Log-Likelihood at Optimum: {log_likelihood_at_optimum}")
+
+```
+
+
+```{python}
+# Calculate standard errors and confidence intervals
+hessian_inv = result.hess_inv  # Inverse Hessian matrix
+standard_errors = np.sqrt(np.diag(hessian_inv))  # Standard errors from diagonal of Hessian
+
+# Construct 95% confidence intervals
+confidence_intervals = [
+    (est - 1.96 * se, est + 1.96 * se)
+    for est, se in zip(estimated_beta, standard_errors)
+]
+
+# Combine results into a DataFrame
+results = pd.DataFrame({
+    'Parameter': parameters,
+    'Estimate': estimated_beta,
+    'Std. Error': standard_errors,
+    '95% CI Lower': [ci[0] for ci in confidence_intervals],
+    '95% CI Upper': [ci[1] for ci in confidence_intervals]
+})
+
+# Print results
+print(results)
+```
+
+The output provides a detailed summary of the maximum likelihood estimates (MLEs) for four parameters in the Multinomial Logit (MNL) model, along with their standard errors and 95% confidence intervals. These estimates quantify how different attributes (streaming service brand, ad presence, and price) influence the probability of a product being chosen.
+
+1. beta_netflix: Holding other factors constant, choosing Netflix increases the utility of a product by approximately 0.59 units relative to the baseline brand (likely Hulu). The 95% confidence interval [0.434, 0.745] does not include 0, indicating the effect is statistically significant. The standard error (0.079) is relatively small, suggesting the estimate is precise. This reflects a strong preference for Netflix.
+
+2. beta_prime: Choosing Amazon Prime increases utility by 0.31 units, again relative to the baseline. The 95% confidence interval [0.145, 0.475] excludes 0, indicating statistical significance. The standard error (0.084) is a bit higher than for Netflix but still moderate, suggesting the estimate is fairly precise. Prime is also preferred over the baseline, though less strongly than Netflix.
+
+3. beta_ads: The presence of ads reduces the utility of a product by −0.43 units. The confidence interval [−0.558, −0.304] lies entirely below 0, indicating a statistically significant negative effect. The standard error (0.065) is small, confirming this is a robust and meaningful finding: ads detract from the product’s attractiveness.
+
+4. beta_price: Each unit increase in price reduces utility by about −0.058 units. While this is the smallest effect in magnitude, the confidence interval [−0.066, −0.049] is extremely narrow and does not contain 0, indicating a very precise and statistically significant effect. This aligns with economic intuition: higher prices reduce utility.
+
+Overall, all four parameters are statistically significant, and the signs of the coefficients align with expected consumer preferences: consumers prefer Netflix and Prime over the baseline, dislike ads, and are sensitive to price increases.
 
 ## 5. Estimation via Bayesian Methods
 
