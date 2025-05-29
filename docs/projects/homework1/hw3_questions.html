@@ -190,6 +190,8 @@ window.Quarto = {
   <li><a href="#estimation-via-maximum-likelihood" id="toc-estimation-via-maximum-likelihood" class="nav-link" data-scroll-target="#estimation-via-maximum-likelihood">4. Estimation via Maximum Likelihood</a></li>
   <li><a href="#estimation-via-bayesian-methods" id="toc-estimation-via-bayesian-methods" class="nav-link" data-scroll-target="#estimation-via-bayesian-methods">5. Estimation via Bayesian Methods</a></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">6. Discussion</a></li>
+  <li><a href="#interpreting-parameter-estimates-without-knowing-the-true-data-generating-process" id="toc-interpreting-parameter-estimates-without-knowing-the-true-data-generating-process" class="nav-link" data-scroll-target="#interpreting-parameter-estimates-without-knowing-the-true-data-generating-process">Interpreting Parameter Estimates Without Knowing the True Data-Generating Process</a></li>
+  <li><a href="#high-level-changes-for-simulating-and-estimating-a-multi-level-model" id="toc-high-level-changes-for-simulating-and-estimating-a-multi-level-model" class="nav-link" data-scroll-target="#high-level-changes-for-simulating-and-estimating-a-multi-level-model">High-level changes for simulating and estimating a multi-level model:</a></li>
   </ul>
 </nav>
     </div>
@@ -257,7 +259,7 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 \]</span></p>
 <p>where the variables are binary indicators and <span class="math inline">\(\varepsilon\)</span> is Type 1 Extreme Value (ie, Gumble) distributed.</p>
 <p>The following code provides the simulation of the conjoint data. :::: {.callout-note collapse=“true”}</p>
-<div id="b935fb3a" class="cell" data-execution_count="1">
+<div id="6fb8dbaf" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -385,7 +387,7 @@ u_{ij} = (1 \times Netflix_j) + (0.5 \times Prime_j) + (-0.8*Ads_j) - 0.1\times 
 <section id="preparing-the-data-for-estimation" class="level2">
 <h2 class="anchored" data-anchor-id="preparing-the-data-for-estimation">3. Preparing the Data for Estimation</h2>
 <p>The “hard part” of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer <span class="math inline">\(i\)</span>, covariate <span class="math inline">\(k\)</span>, and product <span class="math inline">\(j\)</span>) instead of the typical 2 dimensions for cross-sectional regression models (consumer <span class="math inline">\(i\)</span> and covariate <span class="math inline">\(k\)</span>). The fact that each task for each respondent has the same number of alternatives (3) helps. In addition, we need to convert the categorical variables for brand and ads into binary variables.</p>
-<div id="d87dc1e0" class="cell" data-execution_count="2">
+<div id="9dcc320c" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Encode categorical variables</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>conjoint_data[<span class="st">'brand_N'</span>] <span class="op">=</span> (conjoint_data[<span class="st">'brand'</span>] <span class="op">==</span> <span class="st">'N'</span>).astype(<span class="bu">int</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>conjoint_data[<span class="st">'brand_P'</span>] <span class="op">=</span> (conjoint_data[<span class="st">'brand'</span>] <span class="op">==</span> <span class="st">'P'</span>).astype(<span class="bu">int</span>)</span>
@@ -420,7 +422,7 @@ Number of covariates (k): 4
 </section>
 <section id="estimation-via-maximum-likelihood" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-via-maximum-likelihood">4. Estimation via Maximum Likelihood</h2>
-<div id="3b48b4a9" class="cell" data-execution_count="3">
+<div id="49259338" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the MNL log-likelihood function</span></span>
@@ -473,7 +475,7 @@ Number of covariates (k): 4
 Log-Likelihood at Optimum: -7854.729636838663</code></pre>
 </div>
 </div>
-<div id="da9c82e2" class="cell" data-execution_count="4">
+<div id="aebb5071" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate standard errors and confidence intervals</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>hessian_inv <span class="op">=</span> result.hess_inv  <span class="co"># Inverse Hessian matrix</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>standard_errors <span class="op">=</span> np.sqrt(np.diag(hessian_inv))  <span class="co"># Standard errors from diagonal of Hessian</span></span>
@@ -515,16 +517,385 @@ Log-Likelihood at Optimum: -7854.729636838663</code></pre>
 <section id="estimation-via-bayesian-methods" class="level2">
 <h2 class="anchored" data-anchor-id="estimation-via-bayesian-methods">5. Estimation via Bayesian Methods</h2>
 <p><em>todo: code up a metropolis-hasting MCMC sampler of the posterior distribution. Take 11,000 steps and throw away the first 1,000, retaining the subsequent 10,000.</em></p>
+<div id="5b8a8443" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the log-prior function</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_prior(beta):</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Log-prior for the coefficients.</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">    :param beta: Coefficients (array-like)</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">    :return: Log-prior value</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    log_prior_beta <span class="op">=</span> np.<span class="bu">sum</span>(<span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> (beta[:<span class="dv">3</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> <span class="dv">5</span>)  <span class="co"># N(0, 5) for binary variables</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    log_prior_price <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> (beta[<span class="dv">3</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> <span class="dv">1</span>          <span class="co"># N(0, 1) for price</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_prior_beta <span class="op">+</span> log_prior_price</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the log-posterior function</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_posterior(beta, X, y):</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">    Log-posterior function.</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">    :param beta: Coefficients (array-like)</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">    :param X: Covariates (n x k matrix)</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">    :param y: Choices (binary vector of length n)</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">    :return: Log-posterior value</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    log_lik <span class="op">=</span> <span class="op">-</span>mnl_log_likelihood(beta, X, y)  <span class="co"># Log-likelihood</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    log_pr <span class="op">=</span> log_prior(beta)                  <span class="co"># Log-prior</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_lik <span class="op">+</span> log_pr                   <span class="co"># Log-posterior</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Metropolis-Hastings MCMC sampler</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> metropolis_hastings(X, y, n_steps<span class="op">=</span><span class="dv">11000</span>, burn_in<span class="op">=</span><span class="dv">1000</span>):</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">    Metropolis-Hastings MCMC sampler.</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">    :param X: Covariates (n x k matrix)</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">    :param y: Choices (binary vector of length n)</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">    :param n_steps: Total number of steps</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">    :param burn_in: Number of steps to discard</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">    :return: Posterior samples (after burn-in)</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize parameters</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    beta_current <span class="op">=</span> np.zeros(X.shape[<span class="dv">1</span>])  <span class="co"># Start at zero</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    samples <span class="op">=</span> []</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Proposal distribution parameters</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    proposal_std <span class="op">=</span> np.array([<span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">0.005</span>])  <span class="co"># Standard deviations</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(n_steps):</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Propose new beta values</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>        beta_proposed <span class="op">=</span> beta_current <span class="op">+</span> np.random.normal(<span class="dv">0</span>, proposal_std)</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate log-posterior for current and proposed values</span></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>        log_post_current <span class="op">=</span> log_posterior(beta_current, X, y)</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>        log_post_proposed <span class="op">=</span> log_posterior(beta_proposed, X, y)</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Acceptance probability</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>        acceptance_prob <span class="op">=</span> np.exp(log_post_proposed <span class="op">-</span> log_post_current)</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Accept or reject the proposal</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>) <span class="op">&lt;</span> acceptance_prob:</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>            beta_current <span class="op">=</span> beta_proposed</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store the sample</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>        samples.append(beta_current)</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Discard burn-in samples and return the rest</span></span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(samples[burn_in:])</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the MCMC sampler</span></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>posterior_samples <span class="op">=</span> metropolis_hastings(X, y)</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze posterior samples</span></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>posterior_means <span class="op">=</span> posterior_samples.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>posterior_stds <span class="op">=</span> posterior_samples.std(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>posterior_cis <span class="op">=</span> np.percentile(posterior_samples, [<span class="fl">2.5</span>, <span class="fl">97.5</span>], axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> [<span class="st">'beta_netflix'</span>, <span class="st">'beta_prime'</span>, <span class="st">'beta_ads'</span>, <span class="st">'beta_price'</span>]</span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Parameter'</span>: parameters,</span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Posterior Mean'</span>: posterior_means,</span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Posterior Std. Dev'</span>: posterior_stds,</span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>    <span class="st">'95% CI Lower'</span>: posterior_cis[<span class="dv">0</span>],</span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>    <span class="st">'95% CI Upper'</span>: posterior_cis[<span class="dv">1</span>]</span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Parameter  Posterior Mean  Posterior Std. Dev  95% CI Lower  \
+0  beta_netflix        0.585437            0.077570      0.436184   
+1    beta_prime        0.304957            0.084069      0.143503   
+2      beta_ads       -0.428348            0.066231     -0.559770   
+3    beta_price       -0.057625            0.004208     -0.066113   
+
+   95% CI Upper  
+0      0.734613  
+1      0.463256  
+2     -0.301122  
+3     -0.049414  </code></pre>
+</div>
+</div>
 <p><em>hint: Use N(0,5) priors for the betas on the binary variables, and a N(0,1) prior for the price beta.</em></p>
 <p>_hint: instead of calculating post=lik*prior, you can work in the log-space and calculate log-post = log-lik + log-prior (this should enable you to re-use your log-likelihood function from the MLE section just above)_</p>
 <p><em>hint: King Markov (in the video) use a candidate distribution of a coin flip to decide whether to move left or right among his islands. Unlike King Markov, we have 4 dimensions (because we have 4 betas) and our dimensions are continuous. So, use a multivariate normal distribution to pospose the next location for the algorithm to move to. I recommend a MNV(mu, Sigma) where mu=c(0,0,0,0) and sigma has diagonal values c(0.05, 0.05, 0.05, 0.005) and zeros on the off-diagonal. Since this MVN has no covariances, you can sample each dimension independently (so 4 univariate normals instead of 1 multivariate normal), where the first 3 univariate normals are N(0,0.05) and the last one if N(0,0.005).</em></p>
+<div id="6db757c6" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the log-prior function</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_prior(beta):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Log-prior for the coefficients.</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">    :param beta: Coefficients (array-like)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">    :return: Log-prior value</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    log_prior_beta <span class="op">=</span> np.<span class="bu">sum</span>(<span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> (beta[:<span class="dv">3</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> <span class="dv">5</span>)  <span class="co"># N(0, 5) for binary variables</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    log_prior_price <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> (beta[<span class="dv">3</span>] <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> <span class="dv">1</span>          <span class="co"># N(0, 1) for price</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_prior_beta <span class="op">+</span> log_prior_price</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the log-posterior function</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_posterior(beta, X, y):</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">    Log-posterior function.</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">    :param beta: Coefficients (array-like)</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">    :param X: Covariates (n x k matrix)</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">    :param y: Choices (binary vector of length n)</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">    :return: Log-posterior value</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    log_lik <span class="op">=</span> <span class="op">-</span>mnl_log_likelihood(beta, X, y)  <span class="co"># Log-likelihood</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    log_pr <span class="op">=</span> log_prior(beta)                  <span class="co"># Log-prior</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> log_lik <span class="op">+</span> log_pr                   <span class="co"># Log-posterior</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Metropolis-Hastings MCMC sampler</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> metropolis_hastings(X, y, n_steps<span class="op">=</span><span class="dv">11000</span>, burn_in<span class="op">=</span><span class="dv">1000</span>):</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="co">    Metropolis-Hastings MCMC sampler.</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co">    :param X: Covariates (n x k matrix)</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="co">    :param y: Choices (binary vector of length n)</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co">    :param n_steps: Total number of steps</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="co">    :param burn_in: Number of steps to discard</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co">    :return: Posterior samples (after burn-in)</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize parameters</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    beta_current <span class="op">=</span> np.zeros(X.shape[<span class="dv">1</span>])  <span class="co"># Start at zero</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    samples <span class="op">=</span> []</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Proposal distribution parameters</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    proposal_std <span class="op">=</span> np.array([<span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">0.05</span>, <span class="fl">0.005</span>])  <span class="co"># Standard deviations</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> step <span class="kw">in</span> <span class="bu">range</span>(n_steps):</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Propose new beta values</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>        beta_proposed <span class="op">=</span> beta_current <span class="op">+</span> np.random.normal(<span class="dv">0</span>, proposal_std)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate log-posterior for current and proposed values</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>        log_post_current <span class="op">=</span> log_posterior(beta_current, X, y)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>        log_post_proposed <span class="op">=</span> log_posterior(beta_proposed, X, y)</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Acceptance probability</span></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>        acceptance_prob <span class="op">=</span> np.exp(log_post_proposed <span class="op">-</span> log_post_current)</span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Accept or reject the proposal</span></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">1</span>) <span class="op">&lt;</span> acceptance_prob:</span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>            beta_current <span class="op">=</span> beta_proposed</span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store the sample</span></span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>        samples.append(beta_current)</span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Discard burn-in samples and return the rest</span></span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(samples[burn_in:])</span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the MCMC sampler</span></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>posterior_samples <span class="op">=</span> metropolis_hastings(X, y)</span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze posterior samples</span></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>posterior_means <span class="op">=</span> posterior_samples.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>posterior_stds <span class="op">=</span> posterior_samples.std(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>posterior_cis <span class="op">=</span> np.percentile(posterior_samples, [<span class="fl">2.5</span>, <span class="fl">97.5</span>], axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> [<span class="st">'beta_netflix'</span>, <span class="st">'beta_prime'</span>, <span class="st">'beta_ads'</span>, <span class="st">'beta_price'</span>]</span>
+<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Parameter'</span>: parameters,</span>
+<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Posterior Mean'</span>: posterior_means,</span>
+<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Posterior Std. Dev'</span>: posterior_stds,</span>
+<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a>    <span class="st">'95% CI Lower'</span>: posterior_cis[<span class="dv">0</span>],</span>
+<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a>    <span class="st">'95% CI Upper'</span>: posterior_cis[<span class="dv">1</span>]</span>
+<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(results)</span>
+<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a><span class="co"># Trace plot for one parameter (e.g., beta_netflix)</span></span>
+<span id="cb10-83"><a href="#cb10-83" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-84"><a href="#cb10-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-85"><a href="#cb10-85" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb10-86"><a href="#cb10-86" aria-hidden="true" tabindex="-1"></a>plt.plot(posterior_samples[:, <span class="dv">0</span>], alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb10-87"><a href="#cb10-87" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Trace Plot for beta_netflix"</span>)</span>
+<span id="cb10-88"><a href="#cb10-88" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Iteration"</span>)</span>
+<span id="cb10-89"><a href="#cb10-89" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Value"</span>)</span>
+<span id="cb10-90"><a href="#cb10-90" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-92"><a href="#cb10-92" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of posterior distribution for beta_netflix</span></span>
+<span id="cb10-93"><a href="#cb10-93" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb10-94"><a href="#cb10-94" aria-hidden="true" tabindex="-1"></a>plt.hist(posterior_samples[:, <span class="dv">0</span>], bins<span class="op">=</span><span class="dv">30</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb10-95"><a href="#cb10-95" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Posterior Distribution for beta_netflix"</span>)</span>
+<span id="cb10-96"><a href="#cb10-96" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Value"</span>)</span>
+<span id="cb10-97"><a href="#cb10-97" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Frequency"</span>)</span>
+<span id="cb10-98"><a href="#cb10-98" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Parameter  Posterior Mean  Posterior Std. Dev  95% CI Lower  \
+0  beta_netflix        0.591909            0.081858      0.435550   
+1    beta_prime        0.313211            0.086864      0.146375   
+2      beta_ads       -0.433020            0.064819     -0.554352   
+3    beta_price       -0.057716            0.004224     -0.066231   
+
+   95% CI Upper  
+0      0.754660  
+1      0.487570  
+2     -0.305512  
+3     -0.049845  </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-7-output-2.png" width="812" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-7-output-3.png" width="816" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 <p><em>todo: for at least one of the 4 parameters, show the trace plot of the algorithm, as well as the histogram of the posterior distribution.</em></p>
+<div id="0c0434df" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot trace plots for all parameters</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>parameters <span class="op">=</span> [<span class="st">'beta_netflix'</span>, <span class="st">'beta_prime'</span>, <span class="st">'beta_ads'</span>, <span class="st">'beta_price'</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, param <span class="kw">in</span> <span class="bu">enumerate</span>(parameters):</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    plt.plot(posterior_samples[:, i], alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f"Trace Plot for </span><span class="sc">{</span>param<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">"Iteration"</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">"Value"</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot histograms for all parameters</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, param <span class="kw">in</span> <span class="bu">enumerate</span>(parameters):</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    plt.hist(posterior_samples[:, i], bins<span class="op">=</span><span class="dv">30</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f"Posterior Distribution for </span><span class="sc">{</span>param<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">"Value"</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">"Frequency"</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-1.png" width="812" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-2.png" width="812" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-3.png" width="823" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-4.png" width="840" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-5.png" width="816" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-6.png" width="816" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-7.png" width="816" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw3_questions_files/figure-html/cell-8-output-8.png" width="816" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 <p><em>todo: report the 4 posterior means, standard deviations, and 95% credible intervals and compare them to your results from the Maximum Likelihood approach.</em></p>
+<div id="d337978f" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare Bayesian posterior results to Maximum Likelihood estimates</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>comparison <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Parameter'</span>: parameters,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'MLE Estimate'</span>: estimated_beta,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'MLE Std. Error'</span>: standard_errors,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Bayesian Posterior Mean'</span>: posterior_means,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Bayesian Posterior Std. Dev'</span>: posterior_stds,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Bayesian 95% CI Lower'</span>: posterior_cis[<span class="dv">0</span>],</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Bayesian 95% CI Upper'</span>: posterior_cis[<span class="dv">1</span>]</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(comparison)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Parameter  MLE Estimate  MLE Std. Error  Bayesian Posterior Mean  \
+0  beta_netflix      0.589257        0.079246                 0.591909   
+1    beta_prime      0.309896        0.084095                 0.313211   
+2      beta_ads     -0.431235        0.064686                -0.433020   
+3    beta_price     -0.057604        0.004182                -0.057716   
+
+   Bayesian Posterior Std. Dev  Bayesian 95% CI Lower  Bayesian 95% CI Upper  
+0                     0.081858               0.435550               0.754660  
+1                     0.086864               0.146375               0.487570  
+2                     0.064819              -0.554352              -0.305512  
+3                     0.004224              -0.066231              -0.049845  </code></pre>
+</div>
+</div>
 </section>
 <section id="discussion" class="level2">
 <h2 class="anchored" data-anchor-id="discussion">6. Discussion</h2>
 <p><em>todo: Suppose you did not simulate the data. What do you observe about the parameter estimates? What does <span class="math inline">\(\beta_\text{Netflix} &gt; \beta_\text{Prime}\)</span> mean? Does it make sense that <span class="math inline">\(\beta_\text{price}\)</span> is negative?</em></p>
+</section>
+<section id="interpreting-parameter-estimates-without-knowing-the-true-data-generating-process" class="level2">
+<h2 class="anchored" data-anchor-id="interpreting-parameter-estimates-without-knowing-the-true-data-generating-process">Interpreting Parameter Estimates Without Knowing the True Data-Generating Process</h2>
+<p>If we had not simulated the data and were instead analyzing results from a real-world conjoint survey, the parameter estimates shown would still provide valuable and intuitive insights about consumer preferences in the video streaming market. The estimates suggest that, holding other features constant, consumers derive the most utility from Netflix (β ≈ 0.59), followed by Amazon Prime (β ≈ 0.31), with Hulu implicitly serving as the baseline. The inequality 𝛽Netflix &gt; 𝛽Prime implies that consumers prefer Netflix to Prime, suggesting that Netflix enjoys higher brand equity or stronger perceived value. This is consistent with Netflix’s market position as a dominant streaming platform with a well-known content library.</p>
+<p>The negative coefficients for the ad-supported format (β ≈ –0.43) and price (β ≈ –0.058) are also logical. The ad coefficient reflects a clear consumer preference for ad-free experiences, which aligns with the growing trend of users opting for premium subscriptions to avoid interruptions. Similarly, the negative price coefficient confirms price sensitivity: as subscription cost increases, the likelihood of a consumer choosing that option decreases. Taken together, these results are economically reasonable and would be credible inputs for managerial decisions around pricing strategy, product bundling, or feature prioritization—even without access to the underlying data-generating process. The tight confidence intervals further suggest that these insights are statistically robust and reliable.</p>
 <p><em>todo: At a high level, discuss what change you would need to make in order to simulate data from — and estimate the parameters of — a multi-level (aka random-parameter or hierarchical) model. This is the model we use to analyze “real world” conjoint data.</em></p>
+</section>
+<section id="high-level-changes-for-simulating-and-estimating-a-multi-level-model" class="level1">
+<h1>High-level changes for simulating and estimating a multi-level model:</h1>
+<ol type="1">
+<li>Simulating Data:</li>
+</ol>
+<ul>
+<li>In a multi-level model, individual-level heterogeneity is introduced by allowing the coefficients (betas) to vary across respondents.</li>
+<li>Instead of fixed betas, simulate respondent-specific betas drawn from a distribution (e.g., Normal distribution with mean and variance for each beta).</li>
+<li>Example: beta_individual = np.random.multivariate_normal(mean_beta, cov_beta, size=n_peeps)</li>
+</ul>
+<ol start="2" type="1">
+<li>Estimation:</li>
+</ol>
+<ul>
+<li>Use hierarchical Bayesian methods or maximum likelihood estimation with random effects.</li>
+<li>For Bayesian estimation, specify priors for the population-level mean and variance of the betas, and use MCMC to sample from the posterior distribution.</li>
+<li>For maximum likelihood, use techniques like Expectation-Maximization (EM) or integrate over the random effects using numerical methods.</li>
+</ul>
+<ol start="3" type="1">
+<li>Model Specification:</li>
+</ol>
+<ul>
+<li>Update the likelihood function to account for individual-level random effects.</li>
+<li>This involves integrating over the distribution of random effects for each respondent.</li>
+</ul>
+<ol start="4" type="1">
+<li>Computational Considerations:</li>
+</ol>
+<ul>
+<li>Multi-level models are computationally intensive due to the need to estimate both population-level parameters and individual-level random effects.</li>
+<li>Efficient sampling methods (e.g., Hamiltonian Monte Carlo) or approximation techniques (e.g., variational inference) may be required.</li>
+<li>Example: Simulate respondent-specific betas and update the likelihood function to include random effects.</li>
+</ul>
 
 
 </section>
