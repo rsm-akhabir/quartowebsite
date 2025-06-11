@@ -1,0 +1,142 @@
+---
+title: "Key Drivers Analysis"
+author: "Anjana Khabir"
+date: June 11, 2025
+---
+
+
+This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that payment card.
+
+
+```{python}
+import pandas as pd
+
+# Load the datasets
+# Define file paths
+penguins_file_path = '/home/jovyan/Desktop/marketingwebsite/palmer_penguins.csv'
+yoghurt_file_path = '/home/jovyan/Desktop/marketingwebsite/yogurt_data.csv'
+drivers_file_path = '/home/jovyan/Desktop/marketingwebsite/data_for_drivers_analysis.csv'
+
+# Load the datasets
+penguins_data = pd.read_csv(penguins_file_path)
+yoghurt_data = pd.read_csv(yoghurt_file_path)
+drivers_data = pd.read_csv(drivers_file_path)
+
+# Display the first few rows of each dataset
+print("Penguins Data:")
+print(penguins_data.head())
+
+print("\nYoghurt Data:")
+print(yoghurt_data.head())
+
+print("\nDrivers Data:")
+print(drivers_data.head())
+
+
+```
+
+_todo: replicate the table on slide 19 of the session 4 slides. This involves calculating pearson correlations, standardized regression coefficients, "usefulness", Shapley values for a linear regression, Johnson's relative weights, and the mean decrease in the gini coefficient from a random forest. You may use packages built into R or Python._
+
+```{python}
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
+from scipy.stats import pearsonr
+import shap
+
+# Define the target variable and predictors
+target = 'satisfaction'  # Replace with the actual target column name
+predictors = [col for col in drivers_data.columns if col != target]
+
+X = drivers_data[predictors]
+y = drivers_data[target]
+
+# Standardize predictors
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Pearson Correlations
+pearson_corrs = {col: pearsonr(drivers_data[col], y)[0] for col in predictors}
+
+# Standardized Regression Coefficients
+lin_reg = LinearRegression()
+lin_reg.fit(X_scaled, y)
+std_reg_coeffs = dict(zip(predictors, lin_reg.coef_))
+
+# "Usefulness" (absolute value of standardized coefficients)
+usefulness = {key: abs(value) for key, value in std_reg_coeffs.items()}
+
+# Shapley Values for Linear Regression
+explainer = shap.LinearExplainer(lin_reg, X_scaled)
+shap_values = explainer.shap_values(X_scaled)
+shapley_values = np.mean(np.abs(shap_values), axis=0)
+shapley_values_dict = dict(zip(predictors, shapley_values))
+
+# Johnson's Relative Weights (approximation using squared coefficients)
+relative_weights = {key: value**2 for key, value in std_reg_coeffs.items()}
+
+# Mean Decrease in Gini (Random Forest)
+rf = RandomForestRegressor(random_state=42)
+rf.fit(X, y)
+gini_importance = dict(zip(predictors, rf.feature_importances_))
+
+# Combine results into a summary table
+results = pd.DataFrame({
+    'Pearson Correlation': pearson_corrs,
+    'Standardized Coefficients': std_reg_coeffs,
+    'Usefulness': usefulness,
+    'Shapley Values': shapley_values_dict,
+    'Relative Weights': relative_weights,
+    'Mean Decrease in Gini': gini_importance
+})
+
+# Display the results
+print(results)
+```
+
+```{python}
+# Implementing K-Means Clustering from scratch
+def k_means(data, k, max_iters=100, tol=1e-4):
+    # Randomly initialize centroids
+    np.random.seed(42)
+    centroids = data[np.random.choice(data.shape[0], k, replace=False)]
+
+    for _ in range(max_iters):
+        # Assign each point to the nearest centroid
+        distances = np.linalg.norm(data[:, np.newaxis] - centroids, axis=2)
+        labels = np.argmin(distances, axis=1)
+
+        # Calculate new centroids
+        new_centroids = np.array([data[labels == i].mean(axis=0) for i in range(k)])
+
+        # Check for convergence
+        if np.linalg.norm(new_centroids - centroids) < tol:
+            break
+
+        centroids = new_centroids
+
+    return labels, centroids
+
+# Prepare data for clustering (example: using penguins_data)
+penguins_features = penguins_data.select_dtypes(include=[np.number]).dropna().values
+
+# Run K-Means
+k = 3  # Number of clusters
+labels, centroids = k_means(penguins_features, k)
+
+# Add cluster labels to the dataset
+penguins_data['Cluster'] = labels
+
+# Display the first few rows with cluster labels
+print(penguins_data.head())
+```
+
+_If you want a challenge, either (1) implement one or more of the measures yourself. "Usefulness" is rather easy to program up. Shapley values for linear regression are a bit more work. Or (2) add additional measures to the table such as the importance scores from XGBoost._
+
+
+
+
+
+
+
