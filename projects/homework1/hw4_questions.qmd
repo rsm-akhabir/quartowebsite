@@ -241,24 +241,24 @@ plt.legend()
 plt.show()
 ```
 
-_todo: plot the data where the horizontal axis is `x1`, the vertical axis is `x2`, and the points are colored by the value of `y`.  You may optionally draw the wiggly boundary._
-
 ```{python}
-# Plot the synthetic dataset
-plt.figure(figsize=(8, 6))
-plt.scatter(dat['x1'], dat['x2'], c=dat['y'].cat.codes, cmap='coolwarm', alpha=0.7, edgecolor='k')
-plt.xlabel('x1')
-plt.ylabel('x2')
-plt.title('Synthetic Dataset with Wiggly Boundary')
-
-# Plot the wiggly boundary
-x1_boundary = np.linspace(-3, 3, 500)
-boundary = np.sin(4 * x1_boundary) + x1_boundary
-plt.plot(x1_boundary, boundary, color='black', linestyle='--', label='Boundary')
-
-plt.legend()
-plt.show()
+# Print the synthetic dataset
+print(dat)
 ```
+
+The plot presents a synthetic two-dimensional dataset specifically constructed to test classification performance, particularly of non-linear classifiers like K-Nearest Neighbors (KNN). The horizontal axis represents feature x1, the vertical axis represents x2, and the coloring of each point corresponds to the binary class label y, determined by whether a point falls above or below a nonlinear boundary defined by x2 = sin(4x1) + x1.
+
+## Interpretation
+- The dashed black curve represents the decision boundary — a wiggly, sinusoidal threshold that separates the two classes.
+- Points above the boundary are labeled class 1 (red), and those below the boundary are class 0 (blue).
+- The decision boundary introduces non-linearity and local curvature, which makes this an ideal testbed for models that need to capture flexible patterns, such as KNN or decision trees.
+
+## Key Takeaways
+- Non-linear separability: The two classes are not linearly separable, meaning simple classifiers like logistic regression or linear SVMs would likely perform poorly without transformations.
+
+- Smooth local structure: The dataset has a clear structure — points tend to follow a smooth transition across the boundary, which is ideal for local, instance-based learning algorithms like KNN that make predictions based on neighboring examples.
+
+- Visual clarity: The plot clearly illustrates the class overlap near the boundary, where classification uncertainty would be highest 
 
 _todo: generate a test dataset with 100 points, using the same code as above but with a different seed._
 
