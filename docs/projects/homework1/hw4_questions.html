@@ -182,9 +182,16 @@ window.Quarto = {
    
   <ul>
   <li><a href="#a.-k-means" id="toc-a.-k-means" class="nav-link active" data-scroll-target="#a.-k-means">1a. K-Means</a></li>
+  <li><a href="#what-the-plots-show" id="toc-what-the-plots-show" class="nav-link" data-scroll-target="#what-the-plots-show">What the Plots Show</a></li>
+  <li><a href="#interpretation-and-insights" id="toc-interpretation-and-insights" class="nav-link" data-scroll-target="#interpretation-and-insights">Interpretation and Insights:</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key Takeaways:</a></li>
+  <li><a href="#interpretations" id="toc-interpretations" class="nav-link" data-scroll-target="#interpretations">Interpretations:</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary:</a>
+  <ul class="collapse">
   <li><a href="#b.-latent-class-mnl" id="toc-b.-latent-class-mnl" class="nav-link" data-scroll-target="#b.-latent-class-mnl">1b. Latent-Class MNL</a></li>
   <li><a href="#a.-k-nearest-neighbors" id="toc-a.-k-nearest-neighbors" class="nav-link" data-scroll-target="#a.-k-nearest-neighbors">2a. K Nearest Neighbors</a></li>
   <li><a href="#b.-key-drivers-analysis" id="toc-b.-key-drivers-analysis" class="nav-link" data-scroll-target="#b.-key-drivers-analysis">2b. Key Drivers Analysis</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -222,8 +229,7 @@ window.Quarto = {
 </header>
 
 
-<p><em>todo: do two analyses. Do one of either 1a or 1b, AND one of either 2a or 2b.</em></p>
-<div id="47b93456" class="cell" data-execution_count="1">
+<div id="a7eda9de" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the datasets</span></span>
@@ -289,7 +295,7 @@ Drivers Data:
 <section id="a.-k-means" class="level2">
 <h2 class="anchored" data-anchor-id="a.-k-means">1a. K-Means</h2>
 <p><em>todo: write your own code to implement the k-means algorithm. Make plots of the various steps the algorithm takes so you can “see” the algorithm working. Test your algorithm on the Palmer Penguins dataset, specifically using the bill length and flipper length variables. Compare your results to the built-in <code>kmeans</code> function in R or Python.</em></p>
-<div id="e744c123" class="cell" data-execution_count="2">
+<div id="ae5a5aeb" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
@@ -342,33 +348,7 @@ Drivers Data:
 <span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Flipper Length (mm)'</span>)</span>
 <span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Built-in KMeans Clustering'</span>)</span>
 <span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate metrics for different K values</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>wcss <span class="op">=</span> []</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>silhouette_scores <span class="op">=</span> []</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">8</span>):</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> kmeans.fit_predict(data)</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    wcss.append(kmeans.inertia_)</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>    silhouette_scores.append(silhouette_score(data, labels))</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot WCSS and Silhouette Scores</span></span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>))</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">8</span>), wcss, marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Within-Cluster Sum of Squares (WCSS)'</span>)</span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of Clusters (K)'</span>)</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'WCSS'</span>)</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(<span class="dv">2</span>, <span class="dv">8</span>), silhouette_scores, marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Silhouette Scores'</span>)</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of Clusters (K)'</span>)</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Silhouette Score'</span>)</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -383,16 +363,36 @@ Drivers Data:
 </figure>
 </div>
 </div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="hw4_questions_files/figure-html/cell-3-output-3.png" width="1141" height="468" class="figure-img"></p>
-</figure>
 </div>
-</div>
-</div>
+</section>
+<section id="what-the-plots-show" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-plots-show">What the Plots Show</h2>
+<ul>
+<li>Both scatter plots display:</li>
+<li>Individual penguins as points, color-coded by their assigned cluster label.</li>
+<li>Red “X” markers indicating the final cluster centroids after convergence.</li>
+<li>The top plot corresponds to the custom K-Means implementation.</li>
+<li>The bottom plot corresponds to the built-in KMeans function from sklearn.</li>
+</ul>
+</section>
+<section id="interpretation-and-insights" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-and-insights">Interpretation and Insights:</h2>
+<p>Cluster Structure: Both plots exhibit three distinct clusters, each grouping data points that share similar bill and flipper dimensions. This indicates that both implementations are capturing the same underlying structure in the data, aligning well with known biological groupings of penguin species.</p>
+<p>Centroid Positioning: The centroids in both implementations are almost identically placed, confirming that the custom algorithm is functioning correctly and converging toward the same solution as the built-in algorithm.</p>
+<p>This also implies that the random initialization (with the same seed) and convergence logic used in both are effectively similar.</p>
+<p>Cluster Separation: The clusters are well-separated, especially in the horizontal axis (bill length), showing that the features chosen are effective for unsupervised classification.</p>
+<p>The middle cluster (likely corresponding to a species with intermediate bill and flipper lengths) is situated between the two more extreme clusters, illustrating a clear gradation in morphology.</p>
+<p>Consistency and Reliability: The near-identical results suggest that the custom K-Means algorithm is correctly implemented, making it a reliable educational or experimental tool when visualizing or modifying the clustering process manually.</p>
+</section>
+<section id="key-takeaways" class="level1">
+<h1>Key Takeaways:</h1>
+<ul>
+<li>The visual similarity in cluster assignments and centroid locations demonstrates that the custom and built-in algorithms converge on a consistent and biologically meaningful clustering.</li>
+<li>These results validate the effectiveness of using bill length and flipper length for unsupervised segmentation of penguins.</li>
+<li>The plots reinforce that custom algorithms can replicate standard tools if implemented carefully, providing opportunities to further explore or animate the iterative learning process of K-Means.</li>
+</ul>
 <p><em>todo: Calculate both the within-cluster-sum-of-squares and silhouette scores (you can use built-in functions to do so) and plot the results for various numbers of clusters (ie, K=2,3,…,7). What is the “right” number of clusters as suggested by these two metrics?</em></p>
-<div id="ad706d65" class="cell" data-execution_count="3">
+<div id="1cbbe4f2" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -426,7 +426,11 @@ Drivers Data:
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Silhouette Score'</span>)</span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Print WCSS and Silhouette Scores for each K</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, wcss_value, silhouette <span class="kw">in</span> <span class="bu">zip</span>(k_values, wcss, silhouette_scores):</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"K=</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">: WCSS=</span><span class="sc">{</span>wcss_value<span class="sc">:.2f}</span><span class="ss">, Silhouette Score=</span><span class="sc">{</span>silhouette<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -434,9 +438,26 @@ Drivers Data:
 </figure>
 </div>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>K=2: WCSS=20949.79, Silhouette Score=0.61
+K=3: WCSS=14269.56, Silhouette Score=0.46
+K=4: WCSS=9587.14, Silhouette Score=0.44
+K=5: WCSS=7597.61, Silhouette Score=0.41
+K=6: WCSS=6326.31, Silhouette Score=0.41
+K=7: WCSS=6030.08, Silhouette Score=0.37</code></pre>
 </div>
-<p><em>If you want a challenge, add your plots as an animated gif on your website so that the result looks something like <a href="https://www.youtube.com/shorts/XCsoWZU9oN8">this</a>.</em></p>
+</div>
 </section>
+<section id="interpretations" class="level1">
+<h1>Interpretations:</h1>
+<p>The WCSS metric, which measures cluster compactness, consistently decreases with higher values of K because adding more clusters naturally tightens the grouping of data points. However, the key insight comes from identifying the “elbow” point — where the rate of improvement sharply slows. In your results, WCSS drops significantly from K=2 (≈ 20950) to K=3 (≈ 14270), and then the decrease becomes more gradual. This suggests that K=3 is the optimal point where adding another cluster begins to yield diminishing returns. In practice, this is interpreted as the elbow point, commonly used to determine a good balance between complexity and accuracy.</p>
+<p>On the other hand, the Silhouette Score, which measures both cohesion and separation of clusters (ranging from -1 to 1), is highest at K=2 (0.61). A higher silhouette score means better-defined clusters. After K=2, the score drops (to 0.46 at K=3 and further thereafter), indicating that clusters begin to overlap more and are less well-separated. Therefore, purely from a separation perspective, K=2 is the strongest candidate.</p>
+</section>
+<section id="summary" class="level1">
+<h1>Summary:</h1>
+<p>K=2: - Highest Silhouette Score (0.61) - Best-defined, well-separated clusters</p>
+<p>K=3: - WCSS shows a clear elbow at this point - Aligns with known biological structure (3 penguin species)</p>
+<p>In conclusion, K=2 is mathematically optimal in terms of separation, but K=3 offers a practical and interpretable solution that reflects the likely biological groupings in the dataset. If interpretability and domain alignment are priorities, K=3 is recommended. If statistical purity is preferred, K=2 may be more appropriate.</p>
 <section id="b.-latent-class-mnl" class="level2">
 <h2 class="anchored" data-anchor-id="b.-latent-class-mnl">1b. Latent-Class MNL</h2>
 <p><em>todo: Use the Yogurt dataset to estimate a latent-class MNL model. This model was formally introduced in the paper by Kamakura &amp; Russell (1989); you may want to read or reference page 2 of the pdf, which is described in the class slides, session 4, slides 56-57.</em></p>
@@ -448,55 +469,31 @@ Drivers Data:
 <section id="a.-k-nearest-neighbors" class="level2">
 <h2 class="anchored" data-anchor-id="a.-k-nearest-neighbors">2a. K Nearest Neighbors</h2>
 <p><em>todo: use the following code (or the python equivalent) to generate a synthetic dataset for the k-nearest neighbors algorithm. The code generates a dataset with two features, <code>x1</code> and <code>x2</code>, and a binary outcome variable <code>y</code> that is determined by whether <code>x2</code> is above or below a wiggly boundary defined by a sin function.</em></p>
-<div id="73d944e8" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set random seed for reproducibility</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.column_stack((x1, x2))</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a wiggly boundary</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>boundary <span class="op">=</span> np.sin(<span class="dv">4</span> <span class="op">*</span> x1) <span class="op">+</span> x1</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> pd.Categorical((x2 <span class="op">&gt;</span> boundary).astype(<span class="bu">int</span>))  <span class="co"># convert to categorical using pandas</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Create DataFrame</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>dat <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x1'</span>: x1,</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x2'</span>: x2,</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'y'</span>: y</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="264a9d9f" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the synthetic dataset</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(dat[<span class="st">'x1'</span>], dat[<span class="st">'x2'</span>], c<span class="op">=</span>dat[<span class="st">'y'</span>].cat.codes, cmap<span class="op">=</span><span class="st">'coolwarm'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, edgecolor<span class="op">=</span><span class="st">'k'</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'x1'</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'x2'</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Synthetic Dataset with Wiggly Boundary'</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the wiggly boundary</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>x1_boundary <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">500</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>boundary <span class="op">=</span> np.sin(<span class="dv">4</span> <span class="op">*</span> x1_boundary) <span class="op">+</span> x1_boundary</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plt.plot(x1_boundary, boundary, color<span class="op">=</span><span class="st">'black'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Boundary'</span>)</span>
+<div id="be328f4c" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set random seed for reproducibility</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate data</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.column_stack((x1, x2))</span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="hw4_questions_files/figure-html/cell-6-output-1.png" width="662" height="523" class="figure-img"></p>
-</figure>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a wiggly boundary</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>boundary <span class="op">=</span> np.sin(<span class="dv">4</span> <span class="op">*</span> x1) <span class="op">+</span> x1</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> pd.Categorical((x2 <span class="op">&gt;</span> boundary).astype(<span class="bu">int</span>))  <span class="co"># convert to categorical using pandas</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Create DataFrame</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>dat <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x1'</span>: x1,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x2'</span>: x2,</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">'y'</span>: y</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-</div>
-<p><em>todo: plot the data where the horizontal axis is <code>x1</code>, the vertical axis is <code>x2</code>, and the points are colored by the value of <code>y</code>. You may optionally draw the wiggly boundary.</em></p>
-<div id="7aa8ac3f" class="cell" data-execution_count="6">
+<div id="bb0d7167" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the synthetic dataset</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(dat[<span class="st">'x1'</span>], dat[<span class="st">'x2'</span>], c<span class="op">=</span>dat[<span class="st">'y'</span>].cat.codes, cmap<span class="op">=</span><span class="st">'coolwarm'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, edgecolor<span class="op">=</span><span class="st">'k'</span>)</span>
@@ -514,100 +511,124 @@ Drivers Data:
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
+<p><img src="hw4_questions_files/figure-html/cell-6-output-1.png" width="662" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>todo: plot the data where the horizontal axis is <code>x1</code>, the vertical axis is <code>x2</code>, and the points are colored by the value of <code>y</code>. You may optionally draw the wiggly boundary.</em></p>
+<div id="529cffe7" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the synthetic dataset</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(dat[<span class="st">'x1'</span>], dat[<span class="st">'x2'</span>], c<span class="op">=</span>dat[<span class="st">'y'</span>].cat.codes, cmap<span class="op">=</span><span class="st">'coolwarm'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, edgecolor<span class="op">=</span><span class="st">'k'</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'x1'</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'x2'</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Synthetic Dataset with Wiggly Boundary'</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the wiggly boundary</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>x1_boundary <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">500</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>boundary <span class="op">=</span> np.sin(<span class="dv">4</span> <span class="op">*</span> x1_boundary) <span class="op">+</span> x1_boundary</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>plt.plot(x1_boundary, boundary, color<span class="op">=</span><span class="st">'black'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Boundary'</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
 <p><img src="hw4_questions_files/figure-html/cell-7-output-1.png" width="662" height="523" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p><em>todo: generate a test dataset with 100 points, using the same code as above but with a different seed.</em></p>
-<div id="777ae01c" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a different random seed for the test dataset</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">24</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate test data</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>n_test <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>x1_test <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n_test)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>x2_test <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n_test)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>x_test <span class="op">=</span> np.column_stack((x1_test, x2_test))</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the wiggly boundary for the test dataset</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>boundary_test <span class="op">=</span> np.sin(<span class="dv">4</span> <span class="op">*</span> x1_test) <span class="op">+</span> x1_test</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> pd.Categorical((x2_test <span class="op">&gt;</span> boundary_test).astype(<span class="bu">int</span>))  <span class="co"># convert to categorical using pandas</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create test DataFrame</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>test_dat <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x1'</span>: x1_test,</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x2'</span>: x2_test,</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'y'</span>: y_test</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="2fb17aec" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set a different random seed for the test dataset</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">24</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate test data</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>n_test <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>x1_test <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n_test)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>x2_test <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, n_test)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>x_test <span class="op">=</span> np.column_stack((x1_test, x2_test))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the wiggly boundary for the test dataset</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>boundary_test <span class="op">=</span> np.sin(<span class="dv">4</span> <span class="op">*</span> x1_test) <span class="op">+</span> x1_test</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> pd.Categorical((x2_test <span class="op">&gt;</span> boundary_test).astype(<span class="bu">int</span>))  <span class="co"># convert to categorical using pandas</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create test DataFrame</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>test_dat <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x1'</span>: x1_test,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'x2'</span>: x2_test,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">'y'</span>: y_test</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><em>todo: implement KNN by hand. Check you work with a built-in function – eg, <code>class::knn()</code> or <code>caret::train(method="knn")</code> in R, or scikit-learn’s <code>KNeighborsClassifier</code> in Python.</em></p>
-<div id="ac2181d1" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsClassifier</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Implement KNN by hand</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> knn_custom(train_data, train_labels, test_data, k):</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> []</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> test_point <span class="kw">in</span> test_data:</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate distances from the test point to all training points</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        distances <span class="op">=</span> np.linalg.norm(train_data <span class="op">-</span> test_point, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Find the k nearest neighbors</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        k_indices <span class="op">=</span> np.argsort(distances)[:k]</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        k_nearest_labels <span class="op">=</span> train_labels[k_indices]</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Determine the majority class</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        most_common <span class="op">=</span> Counter(k_nearest_labels).most_common(<span class="dv">1</span>)[<span class="dv">0</span>][<span class="dv">0</span>]</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        predictions.append(most_common)</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(predictions)</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare training and test data</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>train_data <span class="op">=</span> dat[[<span class="st">'x1'</span>, <span class="st">'x2'</span>]].values</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>train_labels <span class="op">=</span> dat[<span class="st">'y'</span>].cat.codes.values</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>test_data <span class="op">=</span> test_dat[[<span class="st">'x1'</span>, <span class="st">'x2'</span>]].values</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>test_labels <span class="op">=</span> test_dat[<span class="st">'y'</span>].cat.codes.values</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Run custom KNN for k=5</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>custom_predictions <span class="op">=</span> knn_custom(train_data, train_labels, test_data, k)</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>custom_accuracy <span class="op">=</span> accuracy_score(test_labels, custom_predictions)</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Custom KNN Accuracy (k=</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span>custom_accuracy<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Check with built-in KNeighborsClassifier</span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsClassifier(n_neighbors<span class="op">=</span>k)</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>knn.fit(train_data, train_labels)</span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>builtin_predictions <span class="op">=</span> knn.predict(test_data)</span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>builtin_accuracy <span class="op">=</span> accuracy_score(test_labels, builtin_predictions)</span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Built-in KNN Accuracy (k=</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span>builtin_accuracy<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="995fa170" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsClassifier</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Implement KNN by hand</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> knn_custom(train_data, train_labels, test_data, k):</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> []</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> test_point <span class="kw">in</span> test_data:</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate distances from the test point to all training points</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        distances <span class="op">=</span> np.linalg.norm(train_data <span class="op">-</span> test_point, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Find the k nearest neighbors</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        k_indices <span class="op">=</span> np.argsort(distances)[:k]</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        k_nearest_labels <span class="op">=</span> train_labels[k_indices]</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Determine the majority class</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        most_common <span class="op">=</span> Counter(k_nearest_labels).most_common(<span class="dv">1</span>)[<span class="dv">0</span>][<span class="dv">0</span>]</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        predictions.append(most_common)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(predictions)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare training and test data</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>train_data <span class="op">=</span> dat[[<span class="st">'x1'</span>, <span class="st">'x2'</span>]].values</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>train_labels <span class="op">=</span> dat[<span class="st">'y'</span>].cat.codes.values</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>test_data <span class="op">=</span> test_dat[[<span class="st">'x1'</span>, <span class="st">'x2'</span>]].values</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>test_labels <span class="op">=</span> test_dat[<span class="st">'y'</span>].cat.codes.values</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Run custom KNN for k=5</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>custom_predictions <span class="op">=</span> knn_custom(train_data, train_labels, test_data, k)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>custom_accuracy <span class="op">=</span> accuracy_score(test_labels, custom_predictions)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Custom KNN Accuracy (k=</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span>custom_accuracy<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Check with built-in KNeighborsClassifier</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsClassifier(n_neighbors<span class="op">=</span>k)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>knn.fit(train_data, train_labels)</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>builtin_predictions <span class="op">=</span> knn.predict(test_data)</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>builtin_accuracy <span class="op">=</span> accuracy_score(test_labels, builtin_predictions)</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Built-in KNN Accuracy (k=</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span>builtin_accuracy<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Custom KNN Accuracy (k=5): 0.92
 Built-in KNN Accuracy (k=5): 0.92</code></pre>
 </div>
 </div>
 <p><em>todo: run your function for k=1,…,k=30, each time noting the percentage of correctly-classified points from the test dataset. Plot the results, where the horizontal axis is 1-30 and the vertical axis is the percentage of correctly-classified points. What is the optimal value of k as suggested by your plot?</em></p>
-<div id="efa2325c" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate KNN for k=1 to k=30</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>k_values <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">31</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>accuracies <span class="op">=</span> []</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> k_values:</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> knn_custom(train_data, train_labels, test_data, k)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    accuracy <span class="op">=</span> accuracy_score(test_labels, predictions)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    accuracies.append(accuracy)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the results</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>plt.plot(k_values, accuracies, marker<span class="op">=</span><span class="st">'o'</span>, linestyle<span class="op">=</span><span class="st">'-'</span>)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'KNN Accuracy vs. Number of Neighbors (k)'</span>)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of Neighbors (k)'</span>)</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Accuracy'</span>)</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>plt.xticks(k_values)</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the optimal k</span></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>optimal_k <span class="op">=</span> k_values[np.argmax(accuracies)]</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Optimal k: </span><span class="sc">{</span>optimal_k<span class="sc">}</span><span class="ss"> with accuracy: </span><span class="sc">{</span><span class="bu">max</span>(accuracies)<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="8c33cafc" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate KNN for k=1 to k=30</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>k_values <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">31</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>accuracies <span class="op">=</span> []</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> k_values:</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> knn_custom(train_data, train_labels, test_data, k)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    accuracy <span class="op">=</span> accuracy_score(test_labels, predictions)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    accuracies.append(accuracy)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the results</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>plt.plot(k_values, accuracies, marker<span class="op">=</span><span class="st">'o'</span>, linestyle<span class="op">=</span><span class="st">'-'</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'KNN Accuracy vs. Number of Neighbors (k)'</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of Neighbors (k)'</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Accuracy'</span>)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>plt.xticks(k_values)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the optimal k</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>optimal_k <span class="op">=</span> k_values[np.argmax(accuracies)]</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Optimal k: </span><span class="sc">{</span>optimal_k<span class="sc">}</span><span class="ss"> with accuracy: </span><span class="sc">{</span><span class="bu">max</span>(accuracies)<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -626,6 +647,7 @@ Built-in KNN Accuracy (k=5): 0.92</code></pre>
 <p><em>If you want a challenge, add additional measures to the table such as the importance scores from XGBoost, from a Neural Network, or from any additional method that measures the importance of variables.</em></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -4,8 +4,6 @@ author: "Anjana Khabir"
 date: June 12, 2025
 ---
 
-_todo: do two analyses.  Do one of either 1a or 1b, AND one of either 2a or 2b._
-
 ```{python}
 import pandas as pd
 
@@ -90,32 +88,36 @@ plt.title('Built-in KMeans Clustering')
 plt.legend()
 plt.show()
 
-# Calculate metrics for different K values
-wcss = []
-silhouette_scores = []
-for k in range(2, 8):
-    kmeans = KMeans(n_clusters=k, random_state=42)
-    labels = kmeans.fit_predict(data)
-    wcss.append(kmeans.inertia_)
-    silhouette_scores.append(silhouette_score(data, labels))
-
-# Plot WCSS and Silhouette Scores
-plt.figure(figsize=(12, 5))
-plt.subplot(1, 2, 1)
-plt.plot(range(2, 8), wcss, marker='o')
-plt.title('Within-Cluster Sum of Squares (WCSS)')
-plt.xlabel('Number of Clusters (K)')
-plt.ylabel('WCSS')
-
-plt.subplot(1, 2, 2)
-plt.plot(range(2, 8), silhouette_scores, marker='o')
-plt.title('Silhouette Scores')
-plt.xlabel('Number of Clusters (K)')
-plt.ylabel('Silhouette Score')
-
-plt.tight_layout()
-plt.show()
 ```
+## What the Plots Show
+- Both scatter plots display:
+- Individual penguins as points, color-coded by their assigned cluster label.
+- Red “X” markers indicating the final cluster centroids after convergence.
+- The top plot corresponds to the custom K-Means implementation.
+- The bottom plot corresponds to the built-in KMeans function from sklearn.
+
+## Interpretation and Insights:
+
+Cluster Structure: 
+Both plots exhibit three distinct clusters, each grouping data points that share similar bill and flipper dimensions. This indicates that both implementations are capturing the same underlying structure in the data, aligning well with known biological groupings of penguin species.
+
+Centroid Positioning:
+The centroids in both implementations are almost identically placed, confirming that the custom algorithm is functioning correctly and converging toward the same solution as the built-in algorithm.
+
+This also implies that the random initialization (with the same seed) and convergence logic used in both are effectively similar.
+
+Cluster Separation:
+The clusters are well-separated, especially in the horizontal axis (bill length), showing that the features chosen are effective for unsupervised classification.
+
+The middle cluster (likely corresponding to a species with intermediate bill and flipper lengths) is situated between the two more extreme clusters, illustrating a clear gradation in morphology.
+
+Consistency and Reliability:
+The near-identical results suggest that the custom K-Means algorithm is correctly implemented, making it a reliable educational or experimental tool when visualizing or modifying the clustering process manually.
+
+# Key Takeaways: 
+- The visual similarity in cluster assignments and centroid locations demonstrates that the custom and built-in algorithms converge on a consistent and biologically meaningful clustering.
+- These results validate the effectiveness of using bill length and flipper length for unsupervised segmentation of penguins.
+- The plots reinforce that custom algorithms can replicate standard tools if implemented carefully, providing opportunities to further explore or animate the iterative learning process of K-Means.
 
 _todo: Calculate both the within-cluster-sum-of-squares and silhouette scores (you can use built-in functions to do so) and plot the results for various numbers of clusters (ie, K=2,3,...,7). What is the "right" number of clusters as suggested by these two metrics?_
 
@@ -154,10 +156,27 @@ plt.ylabel('Silhouette Score')
 
 plt.tight_layout()
 plt.show()
+
+# Print WCSS and Silhouette Scores for each K
+for k, wcss_value, silhouette in zip(k_values, wcss, silhouette_scores):
+    print(f"K={k}: WCSS={wcss_value:.2f}, Silhouette Score={silhouette:.2f}")
 ```
 
-_If you want a challenge, add your plots as an animated gif on your website so that the result looks something like [this](https://www.youtube.com/shorts/XCsoWZU9oN8)._
+# Interpretations: 
+The WCSS metric, which measures cluster compactness, consistently decreases with higher values of K because adding more clusters naturally tightens the grouping of data points. However, the key insight comes from identifying the "elbow" point — where the rate of improvement sharply slows. In your results, WCSS drops significantly from K=2 (≈ 20950) to K=3 (≈ 14270), and then the decrease becomes more gradual. This suggests that K=3 is the optimal point where adding another cluster begins to yield diminishing returns. In practice, this is interpreted as the elbow point, commonly used to determine a good balance between complexity and accuracy.
 
+On the other hand, the Silhouette Score, which measures both cohesion and separation of clusters (ranging from -1 to 1), is highest at K=2 (0.61). A higher silhouette score means better-defined clusters. After K=2, the score drops (to 0.46 at K=3 and further thereafter), indicating that clusters begin to overlap more and are less well-separated. Therefore, purely from a separation perspective, K=2 is the strongest candidate.
+
+# Summary:
+K=2:
+- Highest Silhouette Score (0.61)
+- Best-defined, well-separated clusters
+
+K=3:
+- WCSS shows a clear elbow at this point
+- Aligns with known biological structure (3 penguin species)
+
+In conclusion, K=2 is mathematically optimal in terms of separation, but K=3 offers a practical and interpretable solution that reflects the likely biological groupings in the dataset. If interpretability and domain alignment are priorities, K=3 is recommended. If statistical purity is preferred, K=2 may be more appropriate.
 
 
 ## 1b. Latent-Class MNL
